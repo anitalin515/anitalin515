@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -34,7 +34,34 @@ jobs:
             npm install --legacy-peer-deps
           fi
 
-      - name: Build application
+      - name: Lint and build check
+        run: |
+          npm run lint
+          npm run build
+        env:
+          VITE_BASE_PATH: ./
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --legacy-peer-deps
+          else
+            npm install --legacy-peer-deps
+          fi
+
+      - name: Build for GitHub Pages
         run: npm run build
         env:
           VITE_BASE_PATH: ./
