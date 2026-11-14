@@ -1,0 +1,6 @@
+{
+  "name": "魔術方塊疊疊樂",
+  "description": "2D 魔術方塊點擊落體疊疊樂手機遊戲：移動並旋轉方塊，點擊落下疊高，湊成水平直線即可消除，疊至上方警戒線結束遊戲。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
