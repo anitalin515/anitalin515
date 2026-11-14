@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  deployments: write
 
 concurrency:
   group: pages
@@ -44,6 +45,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.pages_url.outputs.url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -67,6 +71,7 @@ jobs:
           VITE_BASE_PATH: ./
 
       - name: Deploy to gh-pages branch
+        id: pages_url
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -76,3 +81,11 @@ jobs:
           git add -A
           git commit -m "Deploy to GitHub Pages"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          if [ "${REPO}" = "${OWNER}.github.io" ]; then
+            echo "url=https://${OWNER}.github.io/" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://${OWNER}.github.io/${REPO}/" >> "$GITHUB_OUTPUT"
+          fi
